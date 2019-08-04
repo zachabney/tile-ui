@@ -1,20 +1,19 @@
 import UIImage from './image/ui-image'
 import ImageSize from './image/image-size'
-import { EventEmitter } from 'events'
 
-export type State<T> = T | undefined
-export type StateChangeListener<StateType> = (newState: State<StateType>) => any
+export type StateChangeListener<StateType> = (newState: StateType) => any
 
-export default abstract class Component<ImageType extends UIImage, StateType = {}> {
+export default abstract class Component<ImageType extends UIImage, StateType = unknown> {
   private stateChangeListeners: StateChangeListener<StateType>[] = []
 
-  private _state: State<StateType> = this.getInitialState()
-  get state(): State<StateType> {
+  private _state: StateType = this.getInitialState()
+  get state(): StateType {
     return this._state
   }
 
-  getInitialState(): State<StateType> {
-    return undefined
+  getInitialState(): StateType {
+    const state: unknown = undefined
+    return state as StateType
   }
 
   async preload(size: ImageSize): Promise<any> {}
@@ -22,7 +21,9 @@ export default abstract class Component<ImageType extends UIImage, StateType = {
   onDestroy() {}
   abstract render(size: ImageSize): Promise<ImageType> | ImageType
 
-  setState(newState: State<StateType>) {
+  setState(getNewState: (prevState: StateType) => StateType) {
+    const newState = getNewState(this.state)
+
     this._state = newState
     this.stateChangeListeners.forEach(listener => listener(newState))
   }

@@ -3,7 +3,6 @@ import Screen from './screen'
 import { ScreenRenderer } from './screen-renderer'
 import Tile from './tile'
 import ImageSize from './image/image-size'
-import Component from './component'
 
 export default abstract class UIController<ImageType extends UIImage>
   implements ScreenRenderer<ImageType> {
