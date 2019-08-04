@@ -23,6 +23,8 @@ export default abstract class Component<ImageType extends UIImage, StateType = {
   }
 
   async preload(size: ImageSize): Promise<any> {}
+  onLoad() {}
+  onDestroy() {}
   abstract render(size: ImageSize): Promise<ImageType> | ImageType
 
   setState(newState: State<StateType>) {

@@ -8,8 +8,8 @@ export default abstract class UIController<ImageType extends UIImage>
   implements ScreenRenderer<ImageType> {
   currentScreen: Screen<ImageType> | null = null
 
-  abstract renderImage(index: number, image: ImageType): any
-  abstract clearImage(index: number): any
+  abstract renderImage(index: number, image: ImageType): void
+  abstract clearImage(index: number): void
 
   abstract getControllerSize(): number
   abstract getTileImageSize(index: number): ImageSize
@@ -34,6 +34,19 @@ export default abstract class UIController<ImageType extends UIImage>
     const size = this.getTileImageSize(tile.index)
     const image = await tile.button.render(size)
     this.renderImage(tile.index, image)
+  }
+
+  async mountTile(tile: Tile<ImageType>) {
+    await this.renderTile(tile)
+    tile.button.onLoad()
+  }
+
+  unmountTile(tile: Tile<ImageType>, clearImage = true) {
+    if (clearImage) {
+      this.clearImage(tile.index)
+    }
+
+    tile.button.onDestroy()
   }
 
   private async updateTile(tile: Tile<ImageType>) {
@@ -69,9 +82,13 @@ export default abstract class UIController<ImageType extends UIImage>
           continue
         }
 
-        this.renderTile(newTile)
+        if (oldTile) {
+          this.unmountTile(oldTile, false)
+        }
+
+        await this.mountTile(newTile)
       } else if (oldTile) {
-        this.clearImage(tileIndex)
+        this.unmountTile(oldTile)
       }
     }
 
