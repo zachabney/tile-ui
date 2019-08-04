@@ -1,0 +1,27 @@
+{
+  "name": "tile-ui",
+  "version": "1.0.0",
+  "description": "Tile based UI system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zach Abney",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^12.6.9",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zachabney/tile-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zachabney/tile-ui/issues"
+  },
+  "homepage": "https://github.com/zachabney/tile-ui#readme"
+}
