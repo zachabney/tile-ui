@@ -3,6 +3,7 @@ import Screen from './screen'
 import { ScreenRenderer } from './screen-renderer'
 import Tile from './tile'
 import ImageSize from './image/image-size'
+import Component from './component'
 
 export default abstract class UIController<ImageType extends UIImage>
   implements ScreenRenderer<ImageType> {
@@ -18,7 +19,6 @@ export default abstract class UIController<ImageType extends UIImage>
     const tile = this.getTile(index)
     if (tile) {
       tile.button.onPress()
-      await this.updateTile(tile)
     }
   }
 
@@ -26,7 +26,6 @@ export default abstract class UIController<ImageType extends UIImage>
     const tile = this.getTile(index)
     if (tile) {
       tile.button.onRelease()
-      await this.updateTile(tile)
     }
   }
 
@@ -38,6 +37,11 @@ export default abstract class UIController<ImageType extends UIImage>
 
   async mountTile(tile: Tile<ImageType>) {
     await this.renderTile(tile)
+
+    tile.button.registerStateChangeListener(newState => {
+      this.renderTile(tile)
+    })
+
     tile.button.onLoad()
   }
 
@@ -47,13 +51,6 @@ export default abstract class UIController<ImageType extends UIImage>
     }
 
     tile.button.onDestroy()
-  }
-
-  private async updateTile(tile: Tile<ImageType>) {
-    if (tile.button.componentShouldUpdate) {
-      tile.button.onComponentUpdate()
-      this.renderTile(tile)
-    }
   }
 
   getTile(index: number): Tile<ImageType> | undefined {
