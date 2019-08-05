@@ -5,11 +5,10 @@ import ImageLoader from './image-loader'
 
 const STATIC_COLOR = Symbol()
 
-export default abstract class CachedImageLoader<ImageType extends UIImage>
-  implements ImageLoader<ImageType> {
-  private imageCache: { [key: string]: ImageType } = {}
+export default abstract class CachedImageLoader implements ImageLoader {
+  private imageCache: { [key: string]: UIImage } = {}
 
-  async get(path: string, size: ImageSize, background: RGBColor): Promise<ImageType> {
+  async get(path: string, size: ImageSize, background?: RGBColor): Promise<UIImage> {
     const imageKey = CachedImageLoader.getImageKey(path, size, background)
     // use cache if its loaded
     if (imageKey in this.imageCache) {
@@ -22,7 +21,7 @@ export default abstract class CachedImageLoader<ImageType extends UIImage>
     return image
   }
 
-  async solid(size: ImageSize, color: RGBColor): Promise<ImageType> {
+  async solid(size: ImageSize, color: RGBColor): Promise<UIImage> {
     const imageKey = CachedImageLoader.getImageKey(STATIC_COLOR, size, color)
     // use cache if its loaded
     if (imageKey in this.imageCache) {
@@ -35,10 +34,10 @@ export default abstract class CachedImageLoader<ImageType extends UIImage>
     return image
   }
 
-  protected abstract createSolid(size: ImageSize, color: RGBColor): Promise<ImageType>
-  protected abstract load(path: string, size: ImageSize, background: RGBColor): Promise<ImageType>
+  protected abstract createSolid(size: ImageSize, color: RGBColor): Promise<UIImage>
+  protected abstract load(path: string, size: ImageSize, background?: RGBColor): Promise<UIImage>
 
-  private static getImageKey(symbol: string | symbol, size: ImageSize, background: RGBColor) {
+  private static getImageKey(symbol: string | symbol, size: ImageSize, background?: RGBColor) {
     const key = {
       symbol,
       size,

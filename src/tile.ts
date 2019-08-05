@@ -1,8 +1,6 @@
-import ButtonComponent from './components/button-component'
-import UIImage from './image/ui-image'
 import Component from './components/component'
 
-export default interface Tile<ImageType extends UIImage> {
+export default interface Tile {
   index: number
-  component: Component<ImageType>
+  component: Component
 }

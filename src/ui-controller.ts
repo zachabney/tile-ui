@@ -1,22 +1,20 @@
 import UIImage from './image/ui-image'
-import Screen from './screen'
+import UIScreen from './ui-screen'
 import { ScreenRenderer } from './screen-renderer'
 import Tile from './tile'
 import ImageSize from './image/image-size'
+import ButtonComponent from './components/button-component'
 import ImageLoader from './image/image-loader'
-import { ButtonComponent } from '.'
 
-export default abstract class UIController<ImageType extends UIImage>
-  implements ScreenRenderer<ImageType> {
-  readonly imageLoader: ImageLoader<ImageType>
+export default abstract class UIController implements ScreenRenderer {
+  imageLoader: ImageLoader
+  currentScreen: UIScreen | null = null
 
-  constructor(imageLoader: ImageLoader<ImageType>) {
+  constructor(imageLoader: ImageLoader) {
     this.imageLoader = imageLoader
   }
 
-  currentScreen: Screen<ImageType> | null = null
-
-  abstract renderImage(index: number, image: ImageType): void
+  abstract renderImage(index: number, image: UIImage): void
   abstract clearImage(index: number): void
 
   abstract getControllerSize(): number
@@ -36,13 +34,13 @@ export default abstract class UIController<ImageType extends UIImage>
     }
   }
 
-  async renderTile(tile: Tile<ImageType>) {
+  async renderTile(tile: Tile) {
     const size = this.getTileImageSize(tile.index)
     const image = await tile.component.render(size)
     this.renderImage(tile.index, image)
   }
 
-  async mountTile(tile: Tile<ImageType>) {
+  async mountTile(tile: Tile) {
     await this.renderTile(tile)
 
     tile.component.registerStateChangeListener(newState => {
@@ -52,7 +50,7 @@ export default abstract class UIController<ImageType extends UIImage>
     tile.component.onLoad()
   }
 
-  unmountTile(tile: Tile<ImageType>, clearImage = true) {
+  unmountTile(tile: Tile, clearImage = true) {
     if (clearImage) {
       this.clearImage(tile.index)
     }
@@ -60,7 +58,7 @@ export default abstract class UIController<ImageType extends UIImage>
     tile.component.onDestroy()
   }
 
-  getTile(index: number): Tile<ImageType> | undefined {
+  getTile(index: number): Tile | undefined {
     if (!this.currentScreen) {
       return undefined
     }
@@ -70,7 +68,7 @@ export default abstract class UIController<ImageType extends UIImage>
     return tile
   }
 
-  async setScreen(screen: Screen<ImageType>) {
+  async setScreen(screen: UIScreen) {
     await screen.preload(this)
 
     const newTiles = screen.getTiles()

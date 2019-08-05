@@ -1,41 +1,47 @@
 import UIImage from '../image/ui-image'
 import ImageSize from '../image/image-size'
-import UIController from '../ui-controller'
+import UIScreen from '../ui-screen'
 
-export type StateChangeListener<StateType> = (newState: StateType) => any
+export type StateChangeListener<State> = (newState: State) => any
 
-export default abstract class Component<ImageType extends UIImage, StateType = unknown> {
-  readonly uiController: UIController<ImageType>
-
-  constructor(uiController: UIController<ImageType>) {
-    this.uiController = uiController
+export default abstract class Component<State = unknown> {
+  readonly screen: UIScreen
+  get imageLoader() {
+    return this.screen.imageLoader
+  }
+  get uiController() {
+    return this.screen.uiController
   }
 
-  private stateChangeListeners: StateChangeListener<StateType>[] = []
+  private stateChangeListeners: StateChangeListener<State>[] = []
 
-  private _state: StateType = this.getInitialState()
-  get state(): StateType {
+  constructor(screen: UIScreen) {
+    this.screen = screen
+  }
+
+  private _state: State = this.getInitialState()
+  get state(): State {
     return this._state
   }
 
-  setState(getNewState: (prevState: StateType) => StateType) {
+  setState(getNewState: (prevState: State) => State) {
     const newState = getNewState(this.state)
 
     this._state = newState
     this.stateChangeListeners.forEach(listener => listener(newState))
   }
 
-  registerStateChangeListener(listener: StateChangeListener<StateType>) {
+  registerStateChangeListener(listener: StateChangeListener<State>) {
     this.stateChangeListeners.push(listener)
   }
 
-  getInitialState(): StateType {
+  getInitialState(): State {
     const state: unknown = undefined
-    return state as StateType
+    return state as State
   }
 
   async preload(size: ImageSize): Promise<any> {}
   onLoad() {}
   onDestroy() {}
-  abstract render(size: ImageSize): Promise<ImageType> | ImageType
+  abstract render(size: ImageSize): Promise<UIImage> | UIImage
 }
