@@ -1,7 +1,6 @@
 import Tile from './tile'
-import { ScreenRenderer } from './screen-renderer'
 import ImageLoader from './image/image-loader'
-import { UIController } from '.'
+import UIController from './ui-controller'
 
 export default abstract class UIScreen {
   readonly uiController: UIController
@@ -15,12 +14,11 @@ export default abstract class UIScreen {
 
   abstract getTiles(): Tile[]
 
-  async preload(renderer: ScreenRenderer): Promise<any> {
-    const preloadPromises = this.getTiles().map(async tile => {
-      const size = renderer.getTileImageSize(tile.index)
-      return await tile.component.preload(size)
-    })
-
-    await Promise.all(preloadPromises)
+  async preload(): Promise<any> {
+    // this has to be synchronously so caching works
+    for (let tile of this.getTiles()) {
+      const size = this.uiController.getTileImageSize(tile.index)
+      await tile.component.preload(size)
+    }
   }
 }

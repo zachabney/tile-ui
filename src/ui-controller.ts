@@ -1,12 +1,10 @@
 import UIImage from './image/ui-image'
 import UIScreen from './ui-screen'
-import { ScreenRenderer } from './screen-renderer'
 import Tile from './tile'
 import ImageSize from './image/image-size'
-import ButtonComponent from './components/button-component'
 import ImageLoader from './image/image-loader'
 
-export default abstract class UIController implements ScreenRenderer {
+export default abstract class UIController {
   imageLoader: ImageLoader
   currentScreen: UIScreen | null = null
 
@@ -14,34 +12,33 @@ export default abstract class UIController implements ScreenRenderer {
     this.imageLoader = imageLoader
   }
 
-  abstract renderImage(index: number, image: UIImage): void
-  abstract clearImage(index: number): void
-
-  abstract getControllerSize(): number
-  abstract getTileImageSize(index: number): ImageSize
-
-  async emitButtonPress(index: number) {
+  protected emitButtonPress(index: number) {
     const tile = this.getTile(index)
-    if (tile && tile.component instanceof ButtonComponent) {
+    if (tile) {
       tile.component.onPress()
     }
   }
 
-  async emitButtonRelease(index: number) {
+  protected emitButtonRelease(index: number) {
     const tile = this.getTile(index)
-    if (tile && tile.component instanceof ButtonComponent) {
+    if (tile) {
       tile.component.onRelease()
     }
   }
 
-  async renderTile(tile: Tile) {
-    const size = this.getTileImageSize(tile.index)
-    const image = await tile.component.render(size)
+  protected abstract renderImage(index: number, image: UIImage): void
+  protected abstract clearImage(index: number): void
+
+  abstract getControllerSize(): number
+  abstract getTileImageSize(index: number): ImageSize
+
+  private renderTile(tile: Tile) {
+    const image = tile.component.render()
     this.renderImage(tile.index, image)
   }
 
-  async mountTile(tile: Tile) {
-    await this.renderTile(tile)
+  private mountTile(tile: Tile) {
+    this.renderTile(tile)
 
     tile.component.registerStateChangeListener(newState => {
       this.renderTile(tile)
@@ -50,15 +47,16 @@ export default abstract class UIController implements ScreenRenderer {
     tile.component.onLoad()
   }
 
-  unmountTile(tile: Tile, clearImage = true) {
+  private unmountTile(tile: Tile, clearImage = true) {
     if (clearImage) {
       this.clearImage(tile.index)
     }
 
+    tile.component.removeAllStateChangeListeners()
     tile.component.onDestroy()
   }
 
-  getTile(index: number): Tile | undefined {
+  private getTile(index: number): Tile | undefined {
     if (!this.currentScreen) {
       return undefined
     }
@@ -69,7 +67,7 @@ export default abstract class UIController implements ScreenRenderer {
   }
 
   async setScreen(screen: UIScreen) {
-    await screen.preload(this)
+    await screen.preload()
 
     const newTiles = screen.getTiles()
     const oldTiles = this.currentScreen ? this.currentScreen.getTiles() : []
@@ -88,7 +86,7 @@ export default abstract class UIController implements ScreenRenderer {
           this.unmountTile(oldTile, false)
         }
 
-        await this.mountTile(newTile)
+        this.mountTile(newTile)
       } else if (oldTile) {
         this.unmountTile(oldTile)
       }

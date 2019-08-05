@@ -35,6 +35,10 @@ export default abstract class Component<State = unknown> {
     this.stateChangeListeners.push(listener)
   }
 
+  removeAllStateChangeListeners() {
+    this.stateChangeListeners = []
+  }
+
   getInitialState(): State {
     const state: unknown = undefined
     return state as State
@@ -43,5 +47,8 @@ export default abstract class Component<State = unknown> {
   async preload(size: ImageSize): Promise<any> {}
   onLoad() {}
   onDestroy() {}
-  abstract render(size: ImageSize): Promise<UIImage> | UIImage
+  abstract render(): UIImage
+
+  onPress() {}
+  onRelease() {}
 }

@@ -1,23 +1,18 @@
 import UIImage from '../image/ui-image'
-import Component from './component'
-import ImageSize from '../image/image-size'
 import RGBColor from '../image/rgb-color'
 import UIScreen from '../ui-screen'
+import StaticImageComponent from './static-image-component'
+import ImageSize from '../image/image-size'
 
-export default class StaticColorComponent extends Component<UIImage> {
+export default class StaticColorComponent extends StaticImageComponent {
   private readonly color: RGBColor
-  private image!: UIImage
 
   constructor(color: RGBColor, screen: UIScreen) {
     super(screen)
     this.color = color
   }
 
-  async preload(size: ImageSize) {
-    this.image = await this.imageLoader.solid(size, this.color)
-  }
-
-  render(size: ImageSize): UIImage {
-    return this.image
+  async getImage(size: ImageSize): Promise<UIImage> {
+    return await this.imageLoader.solid(size, this.color)
   }
 }

@@ -19,7 +19,7 @@ export default class FSImageLoader extends CachedImageLoader {
         background: color
       }
     })
-      .png()
+      .raw()
       .toBuffer()
 
     const image: UIImage = {
