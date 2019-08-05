@@ -3,9 +3,17 @@ import Screen from './screen'
 import { ScreenRenderer } from './screen-renderer'
 import Tile from './tile'
 import ImageSize from './image/image-size'
+import ImageLoader from './image/image-loader'
+import { ButtonComponent } from '.'
 
 export default abstract class UIController<ImageType extends UIImage>
   implements ScreenRenderer<ImageType> {
+  readonly imageLoader: ImageLoader<ImageType>
+
+  constructor(imageLoader: ImageLoader<ImageType>) {
+    this.imageLoader = imageLoader
+  }
+
   currentScreen: Screen<ImageType> | null = null
 
   abstract renderImage(index: number, image: ImageType): void
@@ -16,32 +24,32 @@ export default abstract class UIController<ImageType extends UIImage>
 
   async emitButtonPress(index: number) {
     const tile = this.getTile(index)
-    if (tile) {
-      tile.button.onPress()
+    if (tile && tile.component instanceof ButtonComponent) {
+      tile.component.onPress()
     }
   }
 
   async emitButtonRelease(index: number) {
     const tile = this.getTile(index)
-    if (tile) {
-      tile.button.onRelease()
+    if (tile && tile.component instanceof ButtonComponent) {
+      tile.component.onRelease()
     }
   }
 
   async renderTile(tile: Tile<ImageType>) {
     const size = this.getTileImageSize(tile.index)
-    const image = await tile.button.render(size)
+    const image = await tile.component.render(size)
     this.renderImage(tile.index, image)
   }
 
   async mountTile(tile: Tile<ImageType>) {
     await this.renderTile(tile)
 
-    tile.button.registerStateChangeListener(newState => {
+    tile.component.registerStateChangeListener(newState => {
       this.renderTile(tile)
     })
 
-    tile.button.onLoad()
+    tile.component.onLoad()
   }
 
   unmountTile(tile: Tile<ImageType>, clearImage = true) {
@@ -49,7 +57,7 @@ export default abstract class UIController<ImageType extends UIImage>
       this.clearImage(tile.index)
     }
 
-    tile.button.onDestroy()
+    tile.component.onDestroy()
   }
 
   getTile(index: number): Tile<ImageType> | undefined {
