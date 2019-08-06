@@ -61,7 +61,7 @@ export default abstract class UIController {
       return undefined
     }
 
-    const tile = this.currentScreen.getTiles().find(tile => tile.index === index)
+    const tile = this.currentScreen.tiles.find(tile => tile.index === index)
 
     return tile
   }
@@ -69,8 +69,8 @@ export default abstract class UIController {
   async setScreen(screen: UIScreen) {
     await screen.preload()
 
-    const newTiles = screen.getTiles()
-    const oldTiles = this.currentScreen ? this.currentScreen.getTiles() : []
+    const newTiles = screen.tiles
+    const oldTiles = this.currentScreen ? this.currentScreen.tiles : []
 
     const controllerSize = this.getControllerSize()
     for (let tileIndex = 0; tileIndex < controllerSize; tileIndex++) {
