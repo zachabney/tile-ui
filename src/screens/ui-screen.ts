@@ -1,6 +1,6 @@
-import Tile from './tile'
-import ImageLoader from './image/image-loader'
-import UIController from './ui-controller'
+import Tile from '../tile'
+import ImageLoader from '../image/image-loader'
+import UIController from '../ui-controller'
 
 export default abstract class UIScreen {
   abstract readonly tiles: Tile[]

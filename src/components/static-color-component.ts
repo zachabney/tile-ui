@@ -1,6 +1,6 @@
 import UIImage from '../image/ui-image'
 import RGBColor from '../image/rgb-color'
-import UIScreen from '../ui-screen'
+import UIScreen from '../screens/ui-screen'
 import StaticImageComponent from './static-image-component'
 import ImageSize from '../image/image-size'
 

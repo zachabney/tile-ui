@@ -4,6 +4,20 @@ import ImageLoader from './image/image-loader'
 import UIImage from './image/ui-image'
 import ImageSize from './image/image-size'
 
+const MAX_RENDER_RETRIES = 5
+
+const withRetries = (method: () => void) => {
+  for (let i = 0; i < MAX_RENDER_RETRIES; i++) {
+    try {
+      method()
+      return
+    } catch (e) {
+      console.error('Retrying', e)
+      continue
+    }
+  }
+}
+
 export default abstract class StreamDeckUIController extends UIController {
   protected streamDeck: StreamDeck
 
@@ -25,11 +39,15 @@ export default abstract class StreamDeckUIController extends UIController {
   }
 
   renderImage(index: number, image: UIImage) {
-    this.streamDeck.fillImage(index, image.buffer)
+    withRetries(() => {
+      this.streamDeck.fillImage(index, image.buffer)
+    })
   }
 
   clearImage(index: number) {
-    this.streamDeck.clearKey(index)
+    withRetries(() => {
+      this.streamDeck.clearKey(index)
+    })
   }
 
   getControllerSize() {

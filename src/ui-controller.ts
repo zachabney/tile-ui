@@ -1,5 +1,5 @@
 import UIImage from './image/ui-image'
-import UIScreen from './ui-screen'
+import UIScreen from './screens/ui-screen'
 import Tile from './tile'
 import ImageSize from './image/image-size'
 import ImageLoader from './image/image-loader'

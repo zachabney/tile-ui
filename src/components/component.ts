@@ -1,6 +1,6 @@
 import UIImage from '../image/ui-image'
 import ImageSize from '../image/image-size'
-import UIScreen from '../ui-screen'
+import UIScreen from '../screens/ui-screen'
 
 export type StateChangeListener<State> = (newState: State) => any
 
