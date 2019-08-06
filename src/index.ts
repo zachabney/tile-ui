@@ -3,6 +3,8 @@ export { default as StreamDeckUIController } from './stream-deck-ui-controller'
 
 export { default as UIScreen } from './screens/ui-screen'
 export { default as BlankScreen } from './screens/blank-screen'
+export { default as ColoredScreen } from './screens/colored-screen'
+
 export { default as Tile } from './tile'
 
 export { default as Component } from './components/component'
