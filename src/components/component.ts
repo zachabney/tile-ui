@@ -6,6 +6,17 @@ export type StateChangeListener<State> = (newState: State) => any
 
 export default abstract class Component<State = unknown> {
   readonly screen: UIScreen
+
+  constructor(screen: UIScreen, initialState?: State) {
+    this.screen = screen
+
+    if (!initialState) {
+      const unknown: unknown = undefined
+      initialState = unknown as State
+    }
+    this._state = initialState
+  }
+
   get imageLoader() {
     return this.screen.imageLoader
   }
@@ -15,12 +26,8 @@ export default abstract class Component<State = unknown> {
 
   private stateChangeListeners: StateChangeListener<State>[] = []
 
-  constructor(screen: UIScreen) {
-    this.screen = screen
-  }
-
-  private _state: State = this.getInitialState()
-  get state(): State {
+  private _state: State
+  protected get state() {
     return this._state
   }
 
@@ -39,12 +46,7 @@ export default abstract class Component<State = unknown> {
     this.stateChangeListeners = []
   }
 
-  getInitialState(): State {
-    const state: unknown = undefined
-    return state as State
-  }
-
-  async preload(size: ImageSize): Promise<any> {}
+  async preload(size: ImageSize): Promise<void> {}
   onLoad() {}
   onDestroy() {}
   abstract render(): UIImage

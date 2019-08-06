@@ -14,7 +14,7 @@ export default abstract class UIScreen {
 
   abstract getTiles(): Tile[]
 
-  async preload(): Promise<any> {
+  async preload() {
     // this has to be synchronously so caching works
     for (let tile of this.getTiles()) {
       const size = this.uiController.getTileImageSize(tile.index)
